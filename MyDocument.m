@@ -51,6 +51,7 @@
     NSString* pointsText = [self.customPointsField stringValue];
 
     // Sample Data
+    [[bezierView bezierPoints] removeAllObjects];
     [self addBezierPointsFromString:pointsText];
     [self elementsDidChangeInBezierView:bezierView];
 }
