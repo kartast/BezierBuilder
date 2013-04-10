@@ -162,8 +162,8 @@ NSPoint NSScaledPoint(NSPoint point, float scale) {
 	
 	if (editingPoint.x < 0) {
 		// It's a new point
-		CGPoint control1 = local_point;
-		CGPoint control2 = local_point;
+		CGPoint control1 = CGPointMake(local_point.x, local_point.y);
+		CGPoint control2 = CGPointMake(local_point.x, local_point.y);
 		
 		NSUInteger pointCount = [bezierPoints count];
 		

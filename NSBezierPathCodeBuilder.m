@@ -15,24 +15,33 @@
 	NSArray *points = [self effectiveBezierPoints];
 	
 	NSMutableArray *lines = [NSMutableArray array];
+    NSString *jsonString = @"{";
 	
 	[lines addObject:@"NSBezierPath *bp = [[NSBezierPath alloc] init];"];
 	for (NSUInteger i = 0; i < [points count]; ++i) {
 		BezierPoint *point = [points objectAtIndex:i];
 		if (i == 0) {
 			[lines addObject:[NSString stringWithFormat:@"[bp moveToPoint:NSMakePoint(%0.2f, %0.2f)]", [point mainPoint].x, [point mainPoint].y]];
+            jsonString = [jsonString stringByAppendingFormat:@"%0.2f, %0.2f",
+                          [point mainPoint].x, [point mainPoint].y];
 		} else {
 			[lines addObject:[NSString stringWithFormat:@"[bp curveToPoint:NSMakePoint(%0.2f, %0.2f) controlPoint1:NSMakePoint(%0.2f, %0.2f) controlPoint2:NSMakePoint(%0.2f, %0.2f)];", 
 							  [point mainPoint].x, [point mainPoint].y,
 							  [point controlPoint1].x, [point controlPoint1].y,
 							  [point controlPoint2].x, [point controlPoint2].y]];
+            jsonString = [jsonString stringByAppendingFormat:@",%0.2f, %0.2f, %0.2f, %0.2f, %0.2f, %0.2f",
+                          [point controlPoint1].x, [point controlPoint1].y,
+                          [point controlPoint2].x, [point controlPoint2].y,
+                          [point mainPoint].x, [point mainPoint].y];
 		}
 	}
+
+    jsonString = [jsonString stringByAppendingString:@"}"];
 	
 	[lines addObject:@"[bp stroke];"];
 	[lines addObject:@"[bp release];"];
 	
-	return [lines componentsJoinedByString:@"\n"];
+	return [[lines componentsJoinedByString:@"\n"] stringByAppendingFormat:@"\n\n\n --JSON-- \n\n %@", jsonString];
 }
 
 - (id) objectForBezierPoints {

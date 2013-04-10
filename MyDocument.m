@@ -19,6 +19,7 @@
 @synthesize codeOption;
 @synthesize originControl;
 @synthesize codeStyleControl;
+@synthesize customPointsField;
 
 - (void) rebuildSteps {
 	
@@ -44,6 +45,79 @@
 
 - (void) codeOptionChanged:(id)sender {
 	[self rebuildSteps];
+}
+
+- (void) loadCustomPoints:(id)sender {
+    NSString* pointsText = [self.customPointsField stringValue];
+
+    // Sample Data
+    [self addBezierPointsFromString:pointsText];
+    [self elementsDidChangeInBezierView:bezierView];
+}
+
+- (void) addBezierPointsFromString:(NSString*)string {
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    
+    // Remove white space and brackets
+    NSString* newString = [string stringByReplacingOccurrencesOfString:@" " withString:@""];
+    newString = [newString stringByReplacingOccurrencesOfString:@"{" withString:@""];
+    newString = [newString stringByReplacingOccurrencesOfString:@"}" withString:@""];
+    
+    NSArray *numbers = [newString componentsSeparatedByString:@","];
+    
+    // Iterate thru the number
+    // sequence is first 2 number is point 1,
+    // 3rd and 4th is control point 1
+    // 5th and 6th is control point 2
+    // 6th and 7th is point 2
+    // repeat
+    int nIndex = 0;
+    
+    for (nIndex=0; nIndex<[numbers count]; nIndex++) {
+        
+        CGPoint local_point = CGPointZero;
+        CGPoint control1 = CGPointZero;
+        CGPoint control2 = CGPointZero;
+        float bezierViewHeight = [bezierView bounds].size.height;
+        
+        if (nIndex == 0) {
+            // First one
+            float fFirstNumber = [[numbers objectAtIndex:nIndex] floatValue];
+            nIndex++;
+            float fSecondNumber = bezierViewHeight- [[numbers objectAtIndex:nIndex] floatValue];
+            
+            local_point = CGPointMake(fFirstNumber, fSecondNumber);
+            control1 = local_point;
+            control2 = local_point;
+        }
+        else {
+            // control1
+            float fFirstNumber = [[numbers objectAtIndex:nIndex] floatValue];
+            nIndex++;
+            float fSecondNumber = bezierViewHeight- [[numbers objectAtIndex:nIndex] floatValue];
+            control1 = CGPointMake(fFirstNumber, fSecondNumber);
+            
+            // control2
+            nIndex++;
+            fFirstNumber = [[numbers objectAtIndex:nIndex] floatValue];
+            nIndex++;
+            fSecondNumber = bezierViewHeight- [[numbers objectAtIndex:nIndex] floatValue];
+            control2 = CGPointMake(fFirstNumber, fSecondNumber);
+            
+            // local_point
+            nIndex++;
+            fFirstNumber = [[numbers objectAtIndex:nIndex] floatValue];
+            nIndex++;
+            fSecondNumber = bezierViewHeight- [[numbers objectAtIndex:nIndex] floatValue];
+            local_point = CGPointMake(fFirstNumber, fSecondNumber);
+        }
+        
+        BezierPoint *newPoint = [[BezierPoint alloc] init];
+        [newPoint setMainPoint:NSPointFromCGPoint(local_point)];
+        [newPoint setControlPoint1:NSPointFromCGPoint(control1)];
+        [newPoint setControlPoint2:NSPointFromCGPoint(control2)];
+        [(NSMutableArray*)bezierView.bezierPoints addObject:newPoint];
+    }
 }
 
 - (void) elementsDidChangeInBezierView:(BezierView *)view {

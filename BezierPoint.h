@@ -10,7 +10,9 @@
 
 
 @interface BezierPoint : NSObject {
-
+    NSPoint mainPoint;
+    NSPoint controlPoint1;
+    NSPoint controlPoint2;
 }
 
 @property NSPoint mainPoint;
