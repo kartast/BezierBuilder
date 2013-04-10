@@ -1,3 +1,9 @@
+##Load custom points from json
+For my personal project, I need to load bezier points from array points,
+So the format is:
+{point_1, control_point_1, control_point_2, point_2, control_point_3, control_point_4, point_3}
+
+
 LICENSE
 -------
 
